@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#rect_sth").mousedown(function (event) {
+          const start_x = event.offsetX;
+          const start_y = event.offsetY;
+          $("#marker").remove();
+          $("#parent_sth").append(
+            `<div style="border: 2px dotted red; position: absolute; pointer-events: none; top: 
+            ${start_y}px; left: ${start_x}px" id="marker"></div>`
+          );
+
+          $("#rect_sth").mousemove(function (event) {
+            var diff_x = event.offsetX - start_x;
+            var diff_y = event.offsetY - start_y;
+            console.log(diff_x);
+            console.log(diff_y);
+
+            // A condition
+            if ((diff_x < 0) & (diff_y < 0)) {
+              $("#marker").css({ top: event.offsetY, left: event.offsetX });
+              $("#marker").width(-diff_x);
+              $("#marker").height(-diff_y);
+            }
+
+            // B condition
+            if ((diff_x > 0) & (diff_y < 0)) {
+              $("#marker").css({ top: event.offsetY, left: start_x });
+              $("#marker").width(diff_x);
+              $("#marker").height(-diff_y);
+            }
+
+            // C condition
+            if ((diff_x < 0) & (diff_y > 0)) {
+              $("#marker").css({ top: start_y, left: event.offsetX });
+              $("#marker").width(-diff_x);
+              $("#marker").height(diff_y);
+            }
+
+            // D condition
+            if ((diff_x > 0) & (diff_y > 0)) {
+              $("#marker").css({ top: start_y, left: start_x });
+              $("#marker").width(diff_x);
+              $("#marker").height(diff_y);
+            }
+
+            $("#rect_sth").mouseup(function () {
+              $("#rect_sth").unbind("mousemove");
+            });
+
+            $("#rect_sth").mouseout(function () {
+              $("#rect_sth").unbind("mousemove");
+            });
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h2>HTML Image</h2>
+    <div style="position: relative" id="parent_sth">
+      <img
+        src="https://www.w3schools.com/html/pic_trulli.jpg"
+        alt="Trulli"
+        width="500"
+        height="333"
+      />
+      <div
+        id="rect_sth"
+        style="
+          width: 498px;
+          height: 331px;
+          border: 1px solid black;
+          position: absolute;
+          top: 0px;
+        "
+      ></div>
+    </div>
+  </body>
+</html>
