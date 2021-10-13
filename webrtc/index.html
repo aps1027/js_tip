@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.webrtc.ecl.ntt.com/skyway-4.4.1.js"></script>
+    <title>ECLWebRTC Tutorial</title>
+</head>
+
+<body>
+    <video id="my-video" width="400px" autoplay muted playsinline></video>
+    <p id="my-id"></p>
+    <input id="their-id"></input>
+    <button id="make-call">Make Call</button>
+    <video id="their-video" width="400px" autoplay muted playsinline></video>
+</body>
+<script>
+    let localStream;
+
+    // camera image acquisition
+    // navigator.mediaDevices
+    //     .getUserMedia({ video: true, audio: true })
+    //     .then((stream) => {
+    //         // On success, the video element is set to a camera image and played back.
+    //         const videoElm = document.getElementById("my-video");
+    //         videoElm.srcObject = stream;
+    //         videoElm.play();
+    //         // Save the camera image to a global variable so that it can be returned to the other party when a call comes in.
+    //         localStream = stream;
+    //     })
+    //     .catch((error) => {
+    //         // Outputs error log in case of failure.
+    //         console.error("mediaDevice.getUserMedia() error:", error);
+    //         return;
+    //     });
+
+    //Peer作成
+    const peer = new Peer({
+        key: "8a40fcfb-b80e-468e-9c56-34f381c056ae",
+        debug: 3,
+    });
+
+    //PeerID取得
+    peer.on("open", () => {
+        document.getElementById("my-id").textContent = peer.id;
+    });
+
+    // // Transmission processing
+    // document.getElementById('make-call').onclick = () => {
+    //     const theirID = document.getElementById('their-id').value;
+    //     const mediaConnection = peer.call(theirID, localStream);
+    //     setEventListener(mediaConnection);
+    // };
+
+    // // Function to set an event listener
+    // const setEventListener = mediaConnection => {
+    //     mediaConnection.on('stream', stream => {
+    //         // Set a camera image to the video element and play it
+    //         const videoElm = document.getElementById('their-video')
+    //         videoElm.srcObject = stream;
+    //         videoElm.play();
+    //     });
+    // }
+
+    // Inbound processing
+    peer.on('call', mediaConnection => {
+        mediaConnection.answer(localStream);
+        setEventListener(mediaConnection);
+    });
+
+    peer.on('error', err => {
+        alert(err.message);
+    });
+
+    peer.on('close', () => {
+        alert('We have lost communication.');
+    });
+</script>
+
+</html>
