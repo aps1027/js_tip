@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+        var ttlImage = 20;
+        var imageCount = 0;
+      var formData = new FormData();
+      var fristImagePostions = [
+        {
+          width: 100,
+          height: 100,
+          left: 10,
+          top: 20,
+        },
+        {
+          width: 100,
+          height: 100,
+          left: 200,
+          top: 20,
+        },
+      ];
+
+      var secondImagePostions = [
+        {
+          width: 100,
+          height: 100,
+          left: 10,
+          top: 20,
+        },
+        {
+          width: 100,
+          height: 100,
+          left: 200,
+          top: 20,
+        },
+      ];
+
+      function myFunction(list, imageName) {
+        var x = document.createElement("CANVAS");
+        x.width = 800;
+        x.height = 600;
+
+        var context = x.getContext("2d");
+        var imageObj = new Image();
+
+        var img = new Image();
+        img.onload = function () {
+          context.drawImage(img, 0, 0, x.width, x.height);
+          list.forEach((position) => {
+            context.fillStyle = "#000000";
+            context.fillRect(
+              position.left,
+              position.top,
+              position.width,
+              position.height
+            );
+          });
+        };
+        img.src = imageName;
+
+        // to hide remove this
+        // document.body.appendChild(x);
+
+        var file = dataURLtoFile(x.toDataURL('image/jpeg'), "IMG_6801.JPG");
+
+        formData.append("file[]", file);
+
+        // call ajax to save
+        if(imageCount + 1 == ttlImage){
+            // call api
+        }
+      }
+
+      myFunction(fristImagePostions, "IMG_6802.JPG");
+
+      myFunction(fristImagePostions, "IMG_6801.JPG");
+
+      function dataURLtoFile(dataurl, filename) {
+        var arr = dataurl.split(","),
+          mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]),
+          n = bstr.length,
+          u8arr = new Uint8Array(n);
+
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+
+        return new File([u8arr], filename, { type: mime });
+      }
+
+      for (var value of formData.values()) {
+        console.log(value);
+      }
+    </script>
+  </body>
+</html>
