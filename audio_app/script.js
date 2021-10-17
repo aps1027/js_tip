@@ -4,7 +4,8 @@ const peer = new Peer(
       .toString(36)
       .padStart(4, 0),
   {
-    host: location.hostname,
+    host: "peer-server.fly.dev",
+    port: 443,
     debug: 1,
     path: "/myapp",
   }
