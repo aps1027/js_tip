@@ -1,0 +1,87 @@
+<style>
+  #the-canvas {
+    border: 1px solid black;
+    direction: ltr;
+  }
+</style>
+<script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+
+<h1>PDF.js 'Hello, base64!' example</h1>
+
+<canvas id="the-canvas"></canvas>
+
+<input type="file" />
+
+<script>
+  // get a reference to the file input
+  const fileInput = document.querySelector("input");
+
+  // listen for the change event so we can capture the file
+  fileInput.addEventListener("change", (e) => {
+    // get a reference to the file
+    const file = e.target.files[0];
+
+    // encode the file using the FileReader API
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      // use a regex to remove data url part
+      const base64String = reader.result
+        .replace("data:", "")
+        .replace(/^.+,/, "");
+
+      // log to console
+      // logs wL2dvYWwgbW9yZ...
+      console.log(base64String);
+
+      // atob() is used to convert base64 encoded PDF to binary-like data.
+      // (See also https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/
+      // Base64_encoding_and_decoding.)
+      var pdfData = atob(base64String);
+
+      // Loaded via <script> tag, create shortcut to access PDF.js exports.
+      var pdfjsLib = window["pdfjs-dist/build/pdf"];
+
+      // The workerSrc property shall be specified.
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "//mozilla.github.io/pdf.js/build/pdf.worker.js";
+
+      // Using DocumentInitParameters object to load binary data.
+      var loadingTask = pdfjsLib.getDocument({ data: pdfData });
+      loadingTask.promise.then(
+        function (pdf) {
+          console.log("PDF loaded");
+
+          // Fetch the first page
+          var pageNumber = 1;
+          pdf.getPage(pageNumber).then(function (page) {
+            console.log("Page loaded");
+
+            var scale = 1.5;
+            var viewport = page.getViewport({ scale: scale });
+
+            // Prepare canvas using PDF page dimensions
+            var canvas = document.getElementById("the-canvas");
+            var context = canvas.getContext("2d");
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            // Render PDF page into canvas context
+            var renderContext = {
+              canvasContext: context,
+              viewport: viewport,
+            };
+            var renderTask = page.render(renderContext);
+            renderTask.promise.then(function () {
+              console.log("Page rendered");
+            });
+          });
+        },
+        function (reason) {
+          // PDF loading error
+          console.error(reason);
+        }
+      );
+    };
+    reader.readAsDataURL(file);
+  });
+</script>
